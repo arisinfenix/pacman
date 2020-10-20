@@ -61,6 +61,7 @@ HOLDVER=0
 IGNOREARCH=0
 INFAKEROOT=0
 INSTALL=0
+LINTPKGBUILD=0
 LOGGING=0
 NEEDED=0
 NOARCHIVE=0
@@ -980,6 +981,7 @@ usage() {
 	printf -- "$(gettext "  --config <file>  Use an alternate config file (instead of '%s')")\n" "$confdir/makepkg.conf"
 	printf -- "$(gettext "  --holdver        Do not update VCS sources")\n"
 	printf -- "$(gettext "  --key <key>      Specify a key to use for %s signing instead of the default")\n" "gpg"
+	printf -- "$(gettext "  --lintpkgbuild   Only run the PKGBUILD linting functions")\n"
 	printf -- "$(gettext "  --noarchive      Do not create package archive")\n"
 	printf -- "$(gettext "  --nocheck        Do not run the %s function in the %s")\n" "check()" "$BUILDSCRIPT"
 	printf -- "$(gettext "  --noprepare      Do not run the %s function in the %s")\n" "prepare()" "$BUILDSCRIPT"
@@ -1030,8 +1032,8 @@ ARGLIST=("$@")
 # Parse Command Line Options.
 OPT_SHORT="AcCdefFghiLmop:rRsSV"
 OPT_LONG=('allsource' 'check' 'clean' 'cleanbuild' 'config:' 'force' 'geninteg'
-          'help' 'holdver' 'ignorearch' 'install' 'key:' 'log' 'noarchive' 'nobuild'
-          'nocolor' 'nocheck' 'nodeps' 'noextract' 'noprepare' 'nosign' 'packagelist'
+          'help' 'holdver' 'ignorearch' 'install' 'key:' 'log' 'lintpkgbuild' 'noarchive'
+          'nobuild' 'nocolor' 'nocheck' 'nodeps' 'noextract' 'noprepare' 'nosign' 'packagelist'
           'printsrcinfo' 'repackage' 'rmdeps' 'sign' 'skipchecksums' 'skipinteg'
           'skippgpcheck' 'source' 'syncdeps' 'verifysource' 'version')
 
@@ -1068,6 +1070,7 @@ while true; do
 		--holdver)        HOLDVER=1 ;;
 		-i|--install)     INSTALL=1 ;;
 		--key)            shift; GPGKEY=$1 ;;
+		--lintpkgbuild)   LINTPKGBUILD=1 ;;
 		-L|--log)         LOGGING=1 ;;
 		-m|--nocolor)     USE_COLOR='n'; PACMAN_OPTS+=("--color" "never") ;;
 		--noarchive)      NOARCHIVE=1 ;;
@@ -1224,6 +1227,7 @@ pkgbase=${pkgbase:-${pkgname[0]}}
 
 # check the PKGBUILD for some basic requirements
 lint_pkgbuild || exit $E_PKGBUILD_ERROR
+(( LINTPKGBUILD )) && exit
 
 if (( !SOURCEONLY && !PRINTSRCINFO )); then
 	merge_arch_attrs

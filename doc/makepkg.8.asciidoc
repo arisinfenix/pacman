@@ -106,6 +106,9 @@ Options
 	As mentioned above, the logs will be localized so you may want to set your
 	locale accordingly if sharing the log output with others.
 
+*--lintpkgbuild*::
+	Only run the PKGBUILD linting functions.
+
 *-m, \--nocolor*::
 	Disable color in output messages.
 
